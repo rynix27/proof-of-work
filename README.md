@@ -1,8 +1,4 @@
-# Proof of Work
-
-**An economy where thinking costs money.**
-
-Built for the [Nebius x NVIDIA Global AI Hackathon](https://nebiusglobalaihackathon.devpost.com/) — Best Apps and Agents track.
+# Proof of Work 
 
 ## The idea
 
