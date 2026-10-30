@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof of Work — the compute exchange</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --felt: #132A22;
+    --felt-dark: #0E211A;
+    --paper: #EFE7D8;
+    --paper-line: #D8CDB4;
+    --ink: #EFE7D8;
+    --ink-dim: #9CB3A8;
+    --ink-on-paper: #1B2B22;
+    --brass: #C9A24B;
+    --rust: #B5432E;            /* fills only: 2.75:1 on the felt, too dim for text */
+    --rust-text: #E4705A;       /* text on the felt: 4.89:1 (WCAG AA) */
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--felt);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    padding: 2.5rem 2rem 4rem;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; position: relative; }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px solid var(--brass);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 2rem;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .tagline {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+    margin-top: 0.3rem;
+  }
+  .round-counter { font-size: 0.85rem; color: var(--ink-dim); text-align: right; }
+  .round-counter .num { color: var(--brass); font-size: 1.4rem; font-weight: 600; display: block; }
+  .pulse {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--brass); margin-right: 6px;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  .pulse.paused { background: var(--ink-dim); animation: none; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+  /* --- Control bar --- */
+  .controls {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem;
+    background: rgba(201,162,75,0.06);
+    border: 1px solid rgba(201,162,75,0.25);
+    padding: 0.7rem 1rem;
+    margin-bottom: 2rem;
+    font-size: 0.8rem;
+  }
+  button {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--brass);
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  button:hover { background: rgba(201,162,75,0.15); }
+  button.primary { background: var(--brass); color: var(--felt-dark); font-weight: 600; }
+  button.primary:hover { background: #d8b666; }
+  button:disabled { opacity: 0.4; cursor: default; }
+  .controls label { color: var(--ink-dim); display: flex; align-items: center; gap: 0.4rem; }
+  select {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    background: var(--felt-dark);
+    color: var(--ink);
+    border: 1px solid var(--brass);
+    padding: 0.35rem 0.5rem;
+  }
+  .controls .spacer { flex: 1; }
+  .sound-toggle { color: var(--ink-dim); cursor: pointer; user-select: none; }
+  .sound-toggle.on { color: var(--brass); }
+
+  section { margin-bottom: 2.2rem; }
+  .section-label {
+    font-size: 0.75rem; color: var(--ink-dim); letter-spacing: 0.04em;
+    margin-bottom: 0.9rem; border-bottom: 1px solid rgba(239,231,216,0.15);
+    padding-bottom: 0.4rem;
+    display: flex; justify-content: space-between;
+  }
+
+  .agent-row {
+    display: grid; grid-template-columns: 130px 1fr 90px 70px;
+    align-items: center; gap: 1rem; padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(239,231,216,0.08);
+  }
+  .agent-name { font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 600; }
+  .agent-name.bankrupt { color: var(--rust-text); text-decoration: line-through; }
+  .bar-track { height: 10px; background: rgba(239,231,216,0.08); position: relative; }
+  .bar-fill { height: 100%; background: var(--brass); transition: width 0.5s ease; }
+  .bar-fill.bankrupt { background: var(--rust); }
+  .agent-balance { text-align: right; font-weight: 600; color: var(--brass); }
+  .agent-balance.bankrupt { color: var(--rust-text); }
+  .agent-won { text-align: right; font-size: 0.8rem; color: var(--ink-dim); }
+
+  /* --- History chart --- */
+  .chart-wrap { background: rgba(239,231,216,0.03); border: 1px solid rgba(239,231,216,0.1); padding: 1rem; }
+  canvas#history-chart { width: 100%; height: 220px; display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.7rem; font-size: 0.75rem; }
+  .legend-item { display: flex; align-items: center; gap: 0.35rem; color: var(--ink-dim); }
+  .legend-swatch { width: 10px; height: 10px; display: inline-block; }
+
+  /* --- Stats panel --- */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px; background: rgba(239,231,216,0.1);
+  }
+  .stat-cell { background: var(--felt); padding: 0.9rem 1rem; }
+  .stat-value { font-size: 1.5rem; font-weight: 600; color: var(--brass); }
+  .stat-label { font-size: 0.7rem; color: var(--ink-dim); margin-top: 0.2rem; }
+
+  /* --- Commentary strip --- */
+  .commentary-strip {
+    background: rgba(201,162,75,0.05);
+    border-top: 1px dashed rgba(201,162,75,0.3);
+    border-bottom: 1px dashed rgba(201,162,75,0.3);
+    padding: 0.7rem 1.2rem;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--brass);
+    min-height: 1.4rem;
+  }
+  .commentary-strip::before { content: "📣 "; font-style: normal; }
+  .commentary-strip.empty { color: var(--ink-dim); font-style: italic; }
+
+  /* --- Leaderboard --- */
+  .leaderboard-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .leaderboard-table th {
+    text-align: left; color: var(--ink-dim); font-weight: 500; font-size: 0.7rem;
+    padding: 0.4rem 0.6rem; border-bottom: 1px solid rgba(239,231,216,0.15);
+  }
+  .leaderboard-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid rgba(239,231,216,0.06); }
+  .leaderboard-table tr:first-child td { color: var(--brass); font-weight: 600; }
+  .leaderboard-note { font-size: 0.75rem; color: var(--ink-dim); margin-top: 0.5rem; }
+
+  .task-strip {
+    background: rgba(201,162,75,0.08); border-left: 3px solid var(--brass);
+    padding: 1rem 1.2rem; font-size: 0.95rem; line-height: 1.5;
+  }
+  .task-strip .bounty { color: var(--brass); font-weight: 600; }
+  .task-strip .prompt { font-family: 'Fraunces', serif; font-style: italic; color: var(--ink); }
+  .task-strip .badge-injected {
+    display: inline-block; background: var(--brass); color: var(--felt-dark);
+    font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.4rem; margin-right: 0.5rem;
+    letter-spacing: 0.03em; vertical-align: middle;
+  }
+  .task-strip .badge-exhibition {
+    display: inline-block; background: transparent; color: var(--ink-dim);
+    border: 1px solid var(--ink-dim); font-size: 0.65rem; padding: 0.1rem 0.4rem;
+    margin-left: 0.5rem; letter-spacing: 0.03em;
+  }
+
+  /* --- Ask the economy --- */
+  .ask-box { display: flex; gap: 0.5rem; margin-top: 0.9rem; flex-wrap: wrap; }
+  .ask-box input[type=text] {
+    flex: 1; min-width: 200px; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem;
+    background: var(--felt-dark); color: var(--ink); border: 1px solid rgba(239,231,216,0.25);
+    padding: 0.5rem 0.7rem;
+  }
+  .ask-box input[type=text]::placeholder { color: var(--ink-dim); }
+  .ask-status { font-size: 0.75rem; color: var(--ink-dim); margin-top: 0.4rem; min-height: 1rem; }
+
+  .ticker {
+    background: var(--paper); color: var(--ink-on-paper); padding: 1rem 1.2rem;
+    max-height: 340px; overflow-y: auto; font-size: 0.83rem; line-height: 1.9;
+  }
+  .ticker-line { border-bottom: 1px dashed var(--paper-line); padding: 0.3rem 0; }
+  .ticker-line:last-child { border-bottom: none; }
+  .tag { font-weight: 600; padding: 0 4px; }
+  .tag.bid { color: #4A6B57; }
+  .tag.resolved-correct { color: #2E6B4A; }
+  .tag.resolved-wrong { color: var(--rust-text); }
+  .tag.loan { color: #8A6A2E; }
+  .tag.bankrupt { color: var(--rust-text); font-weight: 700; }
+  .tag.error { color: #E8A33D; font-weight: 700; }
+  .tag.commentary { color: var(--brass); }
+  .tag.exhibition { color: #7A8FA6; font-weight: 700; }
+  .empty-note { color: var(--ink-dim); font-style: italic; padding: 1rem 0; }
+
+  /* --- Dramatic banner --- */
+  .banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    padding: 1rem 2rem; text-align: center;
+    font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.3rem;
+    transform: translateY(-100%); transition: transform 0.4s cubic-bezier(.2,.8,.2,1);
+  }
+  .banner.show { transform: translateY(0); }
+  .banner.bankruptcy { background: var(--rust); color: #FBEDE7; }
+  .banner.monopoly { background: var(--brass); color: var(--felt-dark); }
+
+  footer {
+    margin-top: 2.5rem; font-size: 0.75rem; color: var(--ink-dim);
+    border-top: 1px solid rgba(239,231,216,0.1); padding-top: 1rem;
+  }
+  a.replay-link { color: var(--brass); }
+
+  /* --- mode banner, status, a11y, responsive (added) --- */
+  .mode-banner { display: inline-block; font-size: 0.65rem; padding: 0.15rem 0.45rem; margin: 0.35rem 0 0; border: 1px solid var(--ink-dim); border-radius: 999px; background: transparent; }
+  .mode-banner.mock { color: #F0C674; border-color: #F0C674; background: rgba(240,198,116,0.08); }
+  .mode-banner.live { color: #9FD6B0; border-color: #4A6B57; background: rgba(74,107,87,0.18); }
+  .mode-banner.replay { color: var(--ink-dim); border-color: var(--ink-dim); }
+  .conn-status { font-size: 0.78rem; color: #E8A33D; min-height: 1rem; margin: -0.8rem 0 0.8rem; }
+  .control-status { font-size: 0.75rem; color: var(--ink-dim); min-height: 1rem; margin: -0.6rem 0 1rem; }
+  .sub-note { font-size: 0.72rem; color: var(--ink-dim); margin-top: 0.5rem; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  .data-table th { text-align: left; color: var(--ink-dim); font-weight: 500; font-size: 0.7rem;
+    padding: 0.35rem 0.5rem; border-bottom: 1px solid rgba(239,231,216,0.15); }
+  .data-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid rgba(239,231,216,0.06); }
+  .scroll-x { overflow-x: auto; }
+  .section-tools { display: flex; gap: 0.8rem; align-items: center; font-weight: 400; }
+  .section-tools a { color: var(--brass); }
+  button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible,
+  .sound-toggle:focus-visible { outline: 2px solid #F0C674; outline-offset: 2px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } .bar-fill, .banner { transition: none; } }
+  @media (max-width: 640px) {
+    body { padding: 1.2rem 0.9rem 3rem; }
+    header { flex-direction: column; gap: 0.8rem; align-items: flex-start; }
+    .round-counter { text-align: left; }
+    h1 { font-size: 1.6rem; }
+    .agent-row { grid-template-columns: 90px 1fr 56px; gap: 0.6rem; }
+    .agent-won { display: none; }
+    .ask-box input[type=text] { max-width: none !important; min-width: 0; width: 100%; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* --- round-2 panels --- */
+  .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+  .mini-title { font-size: 0.72rem; color: var(--ink-dim); margin-bottom: 0.3rem; }
+  .mini-chart { width: 100%; height: 140px; display: block; }
+  .legend.small { font-size: 0.7rem; }
+  tr.winner td { color: var(--brass); font-weight: 600; }
+  .decision-item { font-size: 0.76rem; padding: 0.4rem 0; border-bottom: 1px solid rgba(239,231,216,0.07); }
+  .decision-item .who { color: var(--brass); }
+  .decision-item .why { color: var(--ink-dim); display: block; margin-top: 0.15rem; }
+  .decision-item .said { color: var(--ink-dim); font-style: italic; display: block; }
+  .override { color: #F0C674; }
+  .note-block { font-size: 0.76rem; color: var(--ink-dim); margin-top: 0.5rem; line-height: 1.5; }
+  .analysis-text p { margin: 0.35rem 0; font-size: 0.78rem; }
+  select.wide { max-width: 100%; }
+</style>
+</head>
+<body>
+<div id="banner" class="banner" role="status" aria-live="polite"></div>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Proof of Work</h1>
+      <div class="tagline">an economy where thinking costs money</div>
+    </div>
+    <div class="round-counter">
+      <span class="num" id="round-num">0</span>
+      <span><span class="pulse" id="pulse-dot"></span><span id="pulse-label">live</span></span>
+    </div>
+  </header>
+
+  <div id="mode-banner" class="mode-banner replay" role="status">Loading&hellip;</div>
+  <div id="conn-status" class="conn-status" role="alert"></div>
+
+  <div class="controls" role="group" aria-label="Simulation controls">
+    <button id="btn-pause">Pause</button>
+    <button id="btn-resume" disabled>Resume</button>
+    <button id="btn-reset">Reset run</button>
+    <label>Speed
+      <select id="speed-select">
+        <option value="8">Normal</option>
+        <option value="3">Fast</option>
+        <option value="1">Very fast</option>
+        <option value="15">Slow</option>
+      </select>
+    </label>
+    <button id="btn-save-replay">Save this run</button>
+    <label>Replays
+      <select id="replay-select"><option value="">— live —</option></select>
+    </label>
+    <div class="spacer"></div>
+    <button id="btn-unlock" hidden>Unlock controls</button>
+    <span class="sound-toggle" id="sound-toggle" role="button" tabindex="0" aria-pressed="false">&#9834; sound off</span>
+  </div>
+  <div id="control-status" class="control-status" role="status" aria-live="polite"></div>
+
+  <section>
+    <div class="section-label">AGENT LEDGER</div>
+    <div id="ledger"><div class="empty-note">Loading&hellip;</div></div>
+    <div class="commentary-strip empty" id="commentary">Commentary will appear as the run develops&hellip;</div>
+  </section>
+
+  <section>
+    <div class="section-label">BALANCE HISTORY</div>
+    <div class="chart-wrap">
+      <canvas id="history-chart"></canvas>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label"><span>ECONOMY STATS <span style="font-weight:400">(simulated compute-seconds)</span></span>
+      <span class="section-tools"><a href="/export/summary.json" id="export-summary">summary.json</a>
+      <a href="/export/events.csv" id="export-csv">events.csv</a>
+      <a href="/export/events.json" id="export-json">events.json</a></span></div>
+    <div class="stats-grid" id="stats"></div>
+    <div class="sub-note" id="stats-note"></div>
+  </section>
+
+  <section>
+    <div class="section-label">AGENT PERFORMANCE <span style="font-weight:400">(this run)</span></div>
+    <div class="scroll-x"><table class="data-table" id="agent-table"></table></div>
+    <div class="sub-note">Balance is not skill: compare accuracy and compute efficiency (reward &divide; compute) as well as P/L.</div>
+  </section>
+
+  <section>
+    <div class="section-label">LOANS <span id="loan-summary" style="font-weight:400"></span></div>
+    <div class="scroll-x"><table class="data-table" id="loan-table"></table></div>
+    <div class="sub-note" id="loan-note"></div>
+  </section>
+
+  <section>
+    <div class="section-label">TRENDS <span style="font-weight:400">(cumulative, this run)</span></div>
+    <div class="chart-grid">
+      <div><div class="mini-title">Accuracy on graded tasks</div><canvas id="chart-accuracy" class="mini-chart" role="img" aria-label="Accuracy over time"></canvas></div>
+      <div><div class="mini-title">Compute spent vs rewards paid</div><canvas id="chart-econ" class="mini-chart" role="img" aria-label="Compute and rewards over time"></canvas><div class="legend small" id="legend-econ"></div></div>
+      <div><div class="mini-title">Loan volume</div><canvas id="chart-loans" class="mini-chart" role="img" aria-label="Loan volume over time"></canvas></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">LAST AUCTION &amp; DECISIONS</div>
+    <div class="scroll-x"><table class="data-table" id="auction-table"></table></div>
+    <div id="decision-list" aria-live="polite"></div>
+    <div class="note-block">Each agent's strategy checks the model's proposal against expected value (p &times; reward &minus; cost) and risk limits. &ldquo;model says&rdquo; is the model's own words and is not verified.</div>
+  </section>
+
+  <section>
+    <div class="section-label">ESCALATION EFFECTIVENESS</div>
+    <div class="scroll-x"><table class="data-table" id="tier-table"></table></div>
+    <div class="note-block" id="tier-note"></div>
+  </section>
+
+  <section>
+    <div class="section-label">CONFIDENCE CALIBRATION <span id="cal-badge" style="font-weight:400"></span></div>
+    <div class="scroll-x"><table class="data-table" id="cal-table"></table></div>
+    <div class="note-block" id="cal-note"></div>
+  </section>
+
+  <section>
+    <div class="section-label"><span>COST ACCOUNTING</span><span class="section-tools"><a href="/export/report.md" id="export-report">report.md</a></span></div>
+    <div class="note-block" id="cost-note" style="margin-top:0"></div>
+  </section>
+
+  <section>
+    <div class="section-label"><span>LEADERBOARD <span id="leaderboard-runs" style="font-weight:400"></span></span>
+      <label class="section-tools" style="font-weight:400">Rank by
+        <select id="leaderboard-sort" aria-label="Rank leaderboard by">
+          <option value="win_rate">Win rate (wealth)</option><option value="accuracy">Accuracy</option>
+          <option value="profit">Avg profit</option><option value="efficiency">Compute efficiency</option>
+          <option value="balance">Avg final balance</option><option value="cost">Lowest cost / correct</option></select></label></div>
+    <div id="leaderboard-wrap">
+      <table class="leaderboard-table" id="leaderboard-table"></table>
+      <div class="leaderboard-note">Across every completed run, not just this one. A "win" means the highest final balance (wealth) &mdash; not necessarily the best problem solver; see accuracy and efficiency.</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">EXPERIMENTS <span style="font-weight:400">(from <code>python -m training.experiment</code>)</span></div>
+    <label class="sr-only" for="exp-select">Experiment</label>
+    <select id="exp-select" class="wide"><option value="">— none found —</option></select>
+    <div class="scroll-x"><table class="data-table" id="exp-table"></table></div>
+    <div class="analysis-text" id="exp-analysis"></div>
+  </section>
+
+  <section>
+    <div class="section-label">CURRENT TASK</div>
+    <div class="task-strip" id="current-task">Waiting for the first task to arrive&hellip;</div>
+    <div class="ask-box">
+      <input type="text" id="ask-prompt" aria-label="Question for the economy" placeholder="Ask the economy anything… (e.g. What's 12% of 850?)" maxlength="500">
+      <input type="text" id="ask-answer" aria-label="Correct answer (optional)" maxlength="200" placeholder="Correct answer (optional — graded if given)" style="max-width:220px">
+      <button id="btn-ask">Ask</button>
+    </div>
+    <div class="ask-status" id="ask-status" role="status" aria-live="polite"></div>
+  </section>
+
+  <section>
+    <div class="section-label">TRANSACTION TICKER</div>
+    <div class="ticker" id="ticker"></div>
+  </section>
+
+  <footer id="footer">Balances are <strong>simulated compute-seconds</strong>, not provider billing. In live mode every decision and answer comes from a model call to Nemotron on Nebius Token Factory; in mock mode a seeded fake model stands in (the banner above always says which). Model output is validated before it can change any balance.</footer>
+</div>
+
+<script src="/dashboard.js" defer></script>
+</body>
+</html>

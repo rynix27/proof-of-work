@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+node_modules/
+data
+tests/
+docs/
+*.md
+requirements-dev.txt

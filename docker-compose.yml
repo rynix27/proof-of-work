@@ -1,0 +1,23 @@
+# Local/demo deployment. Secrets come from your shell or a .env file, never the image.
+#   CONTROL_TOKEN=$(openssl rand -hex 24) docker compose up --build
+services:
+  app:
+    build: .
+    ports: ["5000:5000"]
+    environment:
+      PUBLIC_MODE: "1"                    # controls disabled unless CONTROL_TOKEN is set
+      STRATEGY_SET: "${STRATEGY_SET:-roster}"
+      ALLOWED_ORIGINS: "${ALLOWED_ORIGINS:-}"   # e.g. https://demo.example.com when behind a proxy
+      CONTROL_TOKEN: "${CONTROL_TOKEN:-}"
+      USE_FAKE_MODEL: "${USE_FAKE_MODEL:-1}"
+      NEBIUS_API_KEY: "${NEBIUS_API_KEY:-}"
+      NANO_MODEL: "${NANO_MODEL:-nvidia/nvidia-nemotron-3-nano-30b-a3b}"
+      ULTRA_MODEL: "${ULTRA_MODEL:-nvidia/Nemotron-3-Ultra-550b-a55b}"
+    volumes: ["pow-data:/app/data"]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+volumes:
+  pow-data:

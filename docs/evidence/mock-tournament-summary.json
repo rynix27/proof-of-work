@@ -1,0 +1,605 @@
+{
+  "kind": "tournament",
+  "param": "strategies (tournament, seats rotated)",
+  "mode": "mock",
+  "trials": 10,
+  "rounds": 60,
+  "base_seed": 100,
+  "control": "field average",
+  "strategies": {
+    "conservative": {
+      "economic_profit": {
+        "n": 10,
+        "mean": 65.4,
+        "median": 62.5,
+        "min": -3,
+        "max": 138,
+        "std": 45.5856,
+        "ci95": [
+          32.7923,
+          98.0077
+        ]
+      },
+      "accuracy": {
+        "n": 10,
+        "mean": 0.584,
+        "median": 0.6125,
+        "min": 0.0,
+        "max": 0.923,
+        "std": 0.2945,
+        "ci95": [
+          0.3733,
+          0.7947
+        ]
+      },
+      "compute_spent": {
+        "n": 10,
+        "mean": 8.4,
+        "median": 8.0,
+        "min": 3,
+        "max": 15,
+        "std": 3.7476,
+        "ci95": [
+          5.7193,
+          11.0807
+        ]
+      },
+      "final_balance": {
+        "n": 10,
+        "mean": 165.7,
+        "median": 162.5,
+        "min": 97,
+        "max": 239,
+        "std": 45.8332,
+        "ci95": [
+          132.9152,
+          198.4848
+        ]
+      },
+      "escalations": {
+        "n": 10,
+        "mean": 0.1,
+        "median": 0.0,
+        "min": 0,
+        "max": 1,
+        "std": 0.3162,
+        "ci95": [
+          -0.1262,
+          0.3262
+        ]
+      },
+      "bankrupt": {
+        "n": 10,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "std": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "loans_issued": {
+        "n": 10,
+        "mean": 0.2,
+        "median": 0.0,
+        "min": 0,
+        "max": 1,
+        "std": 0.4216,
+        "ci95": [
+          -0.1016,
+          0.5016
+        ]
+      }
+    },
+    "aggressive": {
+      "economic_profit": {
+        "n": 10,
+        "mean": 77.7,
+        "median": 76.0,
+        "min": 15,
+        "max": 128,
+        "std": 39.4181,
+        "ci95": [
+          49.5039,
+          105.8961
+        ]
+      },
+      "accuracy": {
+        "n": 10,
+        "mean": 0.668,
+        "median": 0.6535,
+        "min": 0.538,
+        "max": 0.875,
+        "std": 0.1129,
+        "ci95": [
+          0.5873,
+          0.7487
+        ]
+      },
+      "compute_spent": {
+        "n": 10,
+        "mean": 58.3,
+        "median": 57.5,
+        "min": 53,
+        "max": 62,
+        "std": 2.7101,
+        "ci95": [
+          56.3615,
+          60.2385
+        ]
+      },
+      "final_balance": {
+        "n": 10,
+        "mean": 175.9,
+        "median": 176.0,
+        "min": 114,
+        "max": 228,
+        "std": 40.1399,
+        "ci95": [
+          147.1876,
+          204.6124
+        ]
+      },
+      "escalations": {
+        "n": 10,
+        "mean": 4.0,
+        "median": 4.0,
+        "min": 4,
+        "max": 4,
+        "std": 0.0,
+        "ci95": [
+          4.0,
+          4.0
+        ]
+      },
+      "bankrupt": {
+        "n": 10,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "std": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "loans_issued": {
+        "n": 10,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "std": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "cost_efficient": {
+      "economic_profit": {
+        "n": 10,
+        "mean": 143.5,
+        "median": 162.5,
+        "min": 51,
+        "max": 203,
+        "std": 57.3919,
+        "ci95": [
+          102.4471,
+          184.5529
+        ]
+      },
+      "accuracy": {
+        "n": 10,
+        "mean": 0.7098,
+        "median": 0.7355,
+        "min": 0.429,
+        "max": 1.0,
+        "std": 0.1666,
+        "ci95": [
+          0.5907,
+          0.8289
+        ]
+      },
+      "compute_spent": {
+        "n": 10,
+        "mean": 13.8,
+        "median": 15.0,
+        "min": 7,
+        "max": 17,
+        "std": 3.5528,
+        "ci95": [
+          11.2587,
+          16.3413
+        ]
+      },
+      "final_balance": {
+        "n": 10,
+        "mean": 243.7,
+        "median": 262.5,
+        "min": 151,
+        "max": 303,
+        "std": 57.1685,
+        "ci95": [
+          202.807,
+          284.593
+        ]
+      },
+      "escalations": {
+        "n": 10,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "std": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "bankrupt": {
+        "n": 10,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "std": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "loans_issued": {
+        "n": 10,
+        "mean": 0.1,
+        "median": 0.0,
+        "min": 0,
+        "max": 1,
+        "std": 0.3162,
+        "ci95": [
+          -0.1262,
+          0.3262
+        ]
+      }
+    },
+    "accuracy_focused": {
+      "economic_profit": {
+        "n": 10,
+        "mean": 49.0,
+        "median": 40.5,
+        "min": -4,
+        "max": 95,
+        "std": 30.7246,
+        "ci95": [
+          27.0225,
+          70.9775
+        ]
+      },
+      "accuracy": {
+        "n": 10,
+        "mean": 0.7698,
+        "median": 0.7845,
+        "min": 0.5,
+        "max": 0.9,
+        "std": 0.1339,
+        "ci95": [
+          0.674,
+          0.8656
+        ]
+      },
+      "compute_spent": {
+        "n": 10,
+        "mean": 66.1,
+        "median": 65.0,
+        "min": 62,
+        "max": 70,
+        "std": 2.5144,
+        "ci95": [
+          64.3014,
+          67.8986
+        ]
+      },
+      "final_balance": {
+        "n": 10,
+        "mean": 148.4,
+        "median": 140.5,
+        "min": 96,
+        "max": 195,
+        "std": 31.6516,
+        "ci95": [
+          125.7594,
+          171.0406
+        ]
+      },
+      "escalations": {
+        "n": 10,
+        "mean": 5.0,
+        "median": 5.0,
+        "min": 5,
+        "max": 5,
+        "std": 0.0,
+        "ci95": [
+          5.0,
+          5.0
+        ]
+      },
+      "bankrupt": {
+        "n": 10,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "std": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "loans_issued": {
+        "n": 10,
+        "mean": 0.1,
+        "median": 0.0,
+        "min": 0,
+        "max": 1,
+        "std": 0.3162,
+        "ci95": [
+          -0.1262,
+          0.3262
+        ]
+      }
+    },
+    "lender": {
+      "economic_profit": {
+        "n": 10,
+        "mean": 95.0,
+        "median": 89.0,
+        "min": 36,
+        "max": 179,
+        "std": 40.4777,
+        "ci95": [
+          66.046,
+          123.954
+        ]
+      },
+      "accuracy": {
+        "n": 10,
+        "mean": 0.5682,
+        "median": 0.6,
+        "min": 0.222,
+        "max": 0.7,
+        "std": 0.1319,
+        "ci95": [
+          0.4739,
+          0.6625
+        ]
+      },
+      "compute_spent": {
+        "n": 10,
+        "mean": 13.6,
+        "median": 11.5,
+        "min": 9,
+        "max": 22,
+        "std": 4.8351,
+        "ci95": [
+          10.1414,
+          17.0586
+        ]
+      },
+      "final_balance": {
+        "n": 10,
+        "mean": 196.9,
+        "median": 190.5,
+        "min": 136,
+        "max": 279,
+        "std": 40.7061,
+        "ci95": [
+          167.7826,
+          226.0174
+        ]
+      },
+      "escalations": {
+        "n": 10,
+        "mean": 0.2,
+        "median": 0.0,
+        "min": 0,
+        "max": 1,
+        "std": 0.4216,
+        "ci95": [
+          -0.1016,
+          0.5016
+        ]
+      },
+      "bankrupt": {
+        "n": 10,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "std": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "loans_issued": {
+        "n": 10,
+        "mean": 0.5,
+        "median": 0.0,
+        "min": 0,
+        "max": 2,
+        "std": 0.8498,
+        "ci95": [
+          -0.1079,
+          1.1079
+        ]
+      }
+    }
+  },
+  "comparisons": {
+    "conservative": {
+      "economic_profit": {
+        "n": 10,
+        "mean_diff": -20.72,
+        "ci95": [
+          -53.1448,
+          11.7048
+        ],
+        "detectable": false,
+        "direction": null
+      },
+      "final_balance": {
+        "n": 10,
+        "mean_diff": -20.42,
+        "ci95": [
+          -53.0472,
+          12.2072
+        ],
+        "detectable": false,
+        "direction": null
+      },
+      "accuracy": {
+        "n": 10,
+        "mean_diff": -0.076,
+        "ci95": [
+          -0.254,
+          0.1021
+        ],
+        "detectable": false,
+        "direction": null
+      }
+    },
+    "aggressive": {
+      "economic_profit": {
+        "n": 10,
+        "mean_diff": -8.42,
+        "ci95": [
+          -31.6966,
+          14.8566
+        ],
+        "detectable": false,
+        "direction": null
+      },
+      "final_balance": {
+        "n": 10,
+        "mean_diff": -10.22,
+        "ci95": [
+          -33.8914,
+          13.4514
+        ],
+        "detectable": false,
+        "direction": null
+      },
+      "accuracy": {
+        "n": 10,
+        "mean_diff": 0.008,
+        "ci95": [
+          -0.0604,
+          0.0765
+        ],
+        "detectable": false,
+        "direction": null
+      }
+    },
+    "cost_efficient": {
+      "economic_profit": {
+        "n": 10,
+        "mean_diff": 57.38,
+        "ci95": [
+          15.0955,
+          99.6645
+        ],
+        "detectable": true,
+        "direction": "higher"
+      },
+      "final_balance": {
+        "n": 10,
+        "mean_diff": 57.58,
+        "ci95": [
+          15.4385,
+          99.7215
+        ],
+        "detectable": true,
+        "direction": "higher"
+      },
+      "accuracy": {
+        "n": 10,
+        "mean_diff": 0.0498,
+        "ci95": [
+          -0.0764,
+          0.1761
+        ],
+        "detectable": false,
+        "direction": null
+      }
+    },
+    "accuracy_focused": {
+      "economic_profit": {
+        "n": 10,
+        "mean_diff": -37.12,
+        "ci95": [
+          -59.2792,
+          -14.9608
+        ],
+        "detectable": true,
+        "direction": "lower"
+      },
+      "final_balance": {
+        "n": 10,
+        "mean_diff": -37.72,
+        "ci95": [
+          -60.5721,
+          -14.8679
+        ],
+        "detectable": true,
+        "direction": "lower"
+      },
+      "accuracy": {
+        "n": 10,
+        "mean_diff": 0.1098,
+        "ci95": [
+          0.0229,
+          0.1967
+        ],
+        "detectable": true,
+        "direction": "higher"
+      }
+    },
+    "lender": {
+      "economic_profit": {
+        "n": 10,
+        "mean_diff": 8.88,
+        "ci95": [
+          -17.4296,
+          35.1896
+        ],
+        "detectable": false,
+        "direction": null
+      },
+      "final_balance": {
+        "n": 10,
+        "mean_diff": 10.78,
+        "ci95": [
+          -15.8341,
+          37.3941
+        ],
+        "detectable": false,
+        "direction": null
+      },
+      "accuracy": {
+        "n": 10,
+        "mean_diff": -0.0918,
+        "ci95": [
+          -0.1813,
+          -0.0022
+        ],
+        "detectable": true,
+        "direction": "lower"
+      }
+    }
+  },
+  "ledger_all_ok": true,
+  "warning": "Mock mode: results describe the fake model and the economy rules, not LLM behaviour."
+}
